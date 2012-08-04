@@ -1,0 +1,80 @@
+body, html {
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	font-family: Arial;
+	font-size: 25px;
+	
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    /*3D transform */
+    -webkit-transform: scale3d(1, 1, 1);
+    -o-user-select: none;
+    user-select: none;
+}
+
+.game {
+	position: relative;
+	margin: 0 auto;
+}
+
+.hud {
+	color: rgba(0,0,0,0.8);
+	width: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.hud .points {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+}
+
+.hud .lives {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+}
+
+.hud .bombs {
+	position: absolute;
+	top: 40px;
+	right: 10px;
+}
+
+.menus {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	text-align: center;
+	top: 0;
+	left: 0;
+}
+
+.menus nav {
+	background: rgba(255,255,255,0.8);
+	display: none;
+	height: 100%;
+}
+
+.menus nav ul {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+
+.menus nav ul a{
+	cursor: pointer;
+}
+
+#world {
+	background: #f9f9f9;
+	position: relative;
+}
+
+@media(max-width:1024px) {
+
+}

@@ -1,21 +1,33 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>C O N D O R</title>
+		<title>Felony</title>
 		
-		<link href="css/condor.css" rel="stylesheet" />
+		<link href="css/felony.css" rel="stylesheet" />
 	</head>
 	<body>
-		<article>
-			<canvas id="condor" width="100%" height="100%">
+		<div class="game">
+			<canvas id="world" width="100%" height="100%">
 			</canvas>
-			<div class="joystick left" id="joy-left"></div>
-			<div class="joystick right" id="joy-right"></div>
 			<div class="hud"></div>
-		</article>
+			
+			<div class="menus">
+				<nav class="front">
+					<ul>
+						<li class="play" data-method="play"><a>Play Game</a></li>
+					</ul>
+				</nav>
+				<nav class="pause">
+					<ul>
+						<li class="resume" data-method="resume"><a>Resume</a></li>
+					</ul>
+				</nav>
+			</div>
+		</div>
 		
 		<script src="deps/zepto.min.js"></script>
 		<script src="deps/underscore.min.js"></script>
+		<script src="deps/box2dweb.js"></script>
 		<script src="deps/easel/easel.js"></script>
 		<script src="deps/easel/BoxBlurFilter.js"></script>
 		<script src="deps/stats.js"></script>
@@ -24,24 +36,14 @@
 
 		<script src="lib/helpers.js"></script>
 		<script src="lib/game.js"></script>
-		<script src="lib/levels.js"></script>
-		<script src="lib/controls.js"></script>
 		<script src="lib/interface.js"></script>
-		<script src="lib/Body.js"></script>
-		<script src="lib/Particle.js"></script>
-		<script src="lib/Collectable.js"></script>
-		<script src="lib/Enemy.js"></script>
-		<script src="lib/Player.js"></script>
-		<script src="lib/particleManager.js"></script>
+		<script src="lib/controls.js"></script>
+		<script src="lib/menuManager.js"></script>
 		<script src="lib/levelManager.js"></script>
-		<script src="lib/Projectile.js"></script>
-		<script src="lib/ProjectileCannon.js"></script>
-		<script src="lib/WeaponBasic.js"></script>
-		<script src="lib/WeaponCannon.js"></script>
 
 		<script>
 			$(function(){
-				condor.game.init()
+				felony.game.init()
 			});
 		</script>
 	</body>
