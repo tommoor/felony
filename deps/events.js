@@ -67,5 +67,4 @@ Events = {
       }
       return this;
     }
-
-  };
+};
