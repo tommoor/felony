@@ -70,6 +70,15 @@ body, html {
 	cursor: pointer;
 }
 
+.options {
+	list-style: none;
+	font-size: 14px;
+	position: absolute;
+	z-index: 1000;
+	top: 0;
+	right: 10px;
+}
+
 #world {
 	background: #f9f9f9;
 	position: relative;
