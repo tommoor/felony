@@ -84,6 +84,12 @@ body, html {
 	position: relative;
 }
 
+#debugger {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
 @media(max-width:1024px) {
 
 }
