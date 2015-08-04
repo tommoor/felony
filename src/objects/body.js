@@ -8,7 +8,6 @@ Body = function() {
 
 _.extend(Body.prototype, {
 	initialize: function() {
-		
 		if (this.render) {
 			felony.game.scene.add(this.render());
 		}

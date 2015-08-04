@@ -36,7 +36,7 @@ module.exports = Tile.extend({
 	render: function() {
 		// temporary graphic
     var height = 100 + (Math.random()*200);
-		var geometry = new THREE.BoxGeometry(150, 150, height);
+		var geometry = new THREE.CubeGeometry(150, 150, height);
 		
 		for (var i = 0; i < geometry.faces.length; i++) {
 			geometry.faces[i].color.setHex( Math.random() * 0xffffff );
