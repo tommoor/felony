@@ -1,4 +1,7 @@
-felony.controls = _.extend({
+var EventEmitter = require('events').EventEmitter;
+var _ = require('underscore');
+
+module.exports = _.extend({
 
 	keys: {},
 	touches: {},
@@ -16,7 +19,7 @@ felony.controls = _.extend({
 	
 	touchMapping: {
 		'left':     'joy-left',
-		'right': 	'joy-right'
+		'right': 	  'joy-right'
 	},
 	
 	init: function () {
@@ -33,7 +36,7 @@ felony.controls = _.extend({
 			o = this.keyIsDown(keyname);
 			
 			// include the time that a key has been pressed in emitted event
-			if (o) this.trigger(keyname, c-o);
+			if (o) this.emit(keyname, c-o);
 		}
 		
 		// only check for touch input if supported
@@ -43,7 +46,7 @@ felony.controls = _.extend({
 				o = this.isTouched(keyname);
 				
 				// include the time that a key has been pressed in emitted event
-				if (o) this.trigger(keyname, c-o);
+				if (o) this.emit(keyname, c-o);
 			}
 		}
 	},
@@ -69,7 +72,6 @@ felony.controls = _.extend({
 	},
 	
 	isTouched: function (key) {
-		
 		key = this.touchMapping[key];        
 		return this.touches[key];
 	},
@@ -91,8 +93,9 @@ felony.controls = _.extend({
 		
 		$(window).bind('keydown', this.keyDown);
 		$(window).bind('keyup', this.keyUp);
+
 		//$(window).bind('touchstart', this.touchEnable);
 		//$('.joystick').bind('touchstart', this.touchStart);
 		//$('.joystick').bind('touchend', this.touchEnd);
 	}
-}, Events);
+}, EventEmitter.prototype);

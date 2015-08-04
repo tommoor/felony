@@ -1,4 +1,7 @@
-felony.Tile = Body.extend({
+var Body = require('../objects/body');
+var THREE = require('three');
+
+module.exports = Body.extend({
 	
 	WIDTH: 5,
 	HEIGHT: 5,

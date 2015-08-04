@@ -1,19 +1,19 @@
 felony.Collectable = Body.extend({
 
  	SPEED: 3,
-    RADIUS: 15,
+  RADIUS: 15,
 	POINTS: 1000,
 	TYPES: ['life', 'weapon', 'bomb', 'upgrade'],
-    FRICTION: 1, // collectables never slow down
+  FRICTION: 1, // collectables never slow down
 
 	type: null,
 	
-    initialize: function () {
-        Body.prototype.initialize.call(this);
+  initialize: function () {
+    Body.prototype.initialize.call(this);
 
 		this.display();
-		this.chooseType();
-    },
+	  this.chooseType();
+  },
 	
 	collect: function () {
 	
@@ -43,15 +43,14 @@ felony.Collectable = Body.extend({
 		var rand = Math.floor(Math.random()*this.TYPES.length);
 		this.type = this.TYPES[rand];
 	},
-	
-    display: function () {
-        this.body = new Shape();
-        var g = this.body.graphics;
-        g.clear();
-        g.beginFill("orange");
-		g.drawPolyStar(0,0,this.RADIUS,5, 0, -90);
 
-        this.addChild(this.body);
-    }
+  display: function () {
+    this.body = new Shape();
+    var g = this.body.graphics;
+    g.clear();
+    g.beginFill("orange");
+    g.drawPolyStar(0,0,this.RADIUS,5, 0, -90);
 
+    this.addChild(this.body);
+  }
 });

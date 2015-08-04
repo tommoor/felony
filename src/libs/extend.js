@@ -1,3 +1,5 @@
+var _ = require('underscore');
+
 // Shared empty constructor function to aid in prototype-chain creation.
 var ctor = function(){};
 
@@ -40,10 +42,8 @@ var inherits = function(parent, protoProps, staticProps) {
     return child;
 };
 
-var extend = function (protoProps, classProps) {
+module.exports = function (protoProps, classProps) {
     var child = inherits(this, protoProps, classProps);
     child.extend = this.extend;
     return child;
 };
-
-Body.extend = Events.extend = extend;

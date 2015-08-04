@@ -1,4 +1,14 @@
-felony.mapManager = _.extend({
+var EventEmitter = require('events').EventEmitter;
+var Map = require('../map');
+var Config = require('../config');
+var Tile = require('../tiles/tile');
+var TileSolid = require('../tiles/tile-solid');
+var TileRoad = require('../tiles/tile-road');
+var Box2D = require('box-2d-web');
+var b2Vec2 = Box2D.Common.Math.b2Vec2;
+var _ = require('underscore');
+
+module.exports = _.extend({
 	
 	offset: new b2Vec2(0,0),
 	tileOffset: new b2Vec2(0,0),
@@ -8,7 +18,7 @@ felony.mapManager = _.extend({
 	tiles: [],
 	
 	init: function() {
-		this.tile = new felony.Tile();
+		this.tile = new Tile();
 		var h = this.getMaxHeight();
 		var w = this.getMaxWidth();
 		
@@ -23,13 +33,12 @@ felony.mapManager = _.extend({
 		console.log('init map');
 		console.log(this.tileOffset.y + " to " + h);
 		console.log(this.tileOffset.x + " to " + w);
-		
 	},
 	
 	update: function(vector) {
 		
-		var currentY = Math.round(vector.y/this.tile.HEIGHT/felony.game.SCALE) - (this.visibleHeight/2);
-		var currentX = Math.round(vector.x/this.tile.WIDTH/felony.game.SCALE) - (this.visibleWidth/2);
+		var currentY = Math.round(vector.y/this.tile.HEIGHT/Config.SCALE) - (this.visibleHeight/2);
+		var currentX = Math.round(vector.x/this.tile.WIDTH/Config.SCALE) - (this.visibleWidth/2);
 		
 		// debugging
 		if (currentX != this.tileOffset.x || currentY != this.tileOffset.y) {
@@ -40,7 +49,7 @@ felony.mapManager = _.extend({
 		if (currentY > this.tileOffset.y) {
 			console.log('up');
 			
-			//if (currentY < felony.map.length-this.visibleHeight) {
+			//if (currentY < Map.length-this.visibleHeight) {
 				var w = this.getMaxWidth();
 				var m = Math.max(0, this.tileOffset.x);
 				
@@ -73,7 +82,7 @@ felony.mapManager = _.extend({
 		if (currentX > this.tileOffset.x) {
 			console.log('left');
 			
-			//if (currentX < felony.map[0].length-this.visibleWidth) {
+			//if (currentX < Map[0].length-this.visibleWidth) {
 				var h = this.getMaxHeight();
 				var m = Math.max(0, this.tileOffset.y);
 				
@@ -104,15 +113,15 @@ felony.mapManager = _.extend({
 	},
 	
 	createTile: function(x, y) {
-		var why = felony.map.length-y-1;
-    if (!felony.map[why]) return;
-		var opts = felony.map[why][x];
+		var why = Map.length-y-1;
+    if (!Map[why]) return;
+		var opts = Map[why][x];
 		if (!opts) return;
 		
 		// temp
-		if (opts.s == 0) var t = new felony.Tile();
-		if (opts.s == 1) var t = new felony.TileSolid();
-		if (opts.s == 2) var t = new felony.TileRoad();
+		if (opts.s == 0) var t = new Tile();
+		if (opts.s == 1) var t = new TileSolid();
+		if (opts.s == 2) var t = new TileRoad();
 		
 		t.SetPosition(new b2Vec2(x*t.WIDTH, y*t.HEIGHT));
 		if (!this.tiles[y]) this.tiles[y] = [];
@@ -131,16 +140,16 @@ felony.mapManager = _.extend({
 	getInBounds: function(x, y) {
 		
 		if (x < 0 || y < 0) return false;
-		if (x > felony.map[0].length || y > felony.map.length) return false;
+		if (x > Map[0].length || y > Map.length) return false;
 		return true;
 	},
 	
 	getMaxWidth: function() {
-		return Math.min(felony.map[0].length, this.tileOffset.x+this.visibleWidth);
+		return Math.min(Map[0].length, this.tileOffset.x+this.visibleWidth);
 	},
 	
 	getMaxHeight: function() {
-		return Math.min(felony.map.length, this.tileOffset.y+this.visibleHeight);
+		return Math.min(Map.length, this.tileOffset.y+this.visibleHeight);
 	}
 	
-}, Events);
+}, EventEmitter.prototype);

@@ -1,4 +1,12 @@
-var   b2Vec2 = Box2D.Common.Math.b2Vec2
+var Box2D = require('box-2d-web');
+var THREE = require('three');
+var MapManager = require('./managers/map-manager');
+var Vehicle = require('./objects/vehicles/vehicle');
+var Controls = require('./controls');
+var Config = require('./config');
+var $ = require('jquery-browserify');
+
+var b2Vec2 = Box2D.Common.Math.b2Vec2
  	,	b2BodyDef = Box2D.Dynamics.b2BodyDef
  	,	b2Body = Box2D.Dynamics.b2Body
  	,	b2FixtureDef = Box2D.Dynamics.b2FixtureDef
@@ -16,12 +24,8 @@ var   b2Vec2 = Box2D.Common.Math.b2Vec2
 felony = {};
 
 felony.game = {
-
-	FRAMERATE: 30,
-	SCALE: 30.0,
 	
 	debug: true,
-	stage: null,
 	controls: null,
 	player: null,
 	world: null,
@@ -31,15 +35,9 @@ felony.game = {
 	renderer: null,
 	
 	init: function () {
-		
-		Zap.init();
-		
-		this.levels = felony.levelManager.init();
-		this.stage = felony.interface.init();
-		this.controls = felony.controls.init();
-		this.menus = felony.menuManager.init();
-		this.scene = new THREE.Scene();
 
+		this.controls = Controls.init();
+		this.scene = new THREE.Scene();
 		this.scene.add(new THREE.AxisHelper(1000));
 
 		this.world = new b2World(
@@ -47,9 +45,9 @@ felony.game = {
 			true                  // allow sleep
 		);
 		
-		this.world.SetDebugDraw(felony.interface.debugger);
+		//this.world.SetDebugDraw(felony.interface.debugger);
 		
-		this.map = felony.mapManager.init(new b2Vec2(20, 10));
+		this.map = MapManager.init(new b2Vec2(20, 10));
 		
 		// camera
 		this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
@@ -66,9 +64,9 @@ felony.game = {
 	
 	restart: function () {
 		
-		this.menus.hide();
+		//this.menus.hide();
 		
-		this.player = new felony.Vehicle();
+		this.player = new Vehicle();
 		this.player.bindControls();
 		this.player.SetPosition(new b2Vec2(20, 10));
 		//this.camera.track(this.player);
@@ -79,9 +77,9 @@ felony.game = {
 		
 		// start game loop
 		Ticker.addListener(this);
-		Ticker.setFPS(this.FRAMERATE);
+		Ticker.setFPS(Config.FRAMERATE);
 		
-		felony.levelManager.restart();
+		//felony.levelManager.restart();
 	},
 	
 	pause: function () {
@@ -99,7 +97,7 @@ felony.game = {
 		
 		// physics
 		this.world.Step(
-			1 / this.FRAMERATE,   //frame-rate
+			1 / Config.FRAMERATE,   //frame-rate
 			10,       //velocity iterations
 			10        //position iterations
 		);
@@ -108,19 +106,13 @@ felony.game = {
 		this.updateCamera();
 		
 		// sync graphics with camera position
-		felony.interface.update();
+		//felony.interface.update();
 		
 		// sync tiles with camera position
-		felony.mapManager.update(this.camera.position);
+		MapManager.update(this.camera.position);
 		
 		// rendering
-		if (!this.debug) {
-			//this.stage.tick();
-			//this.stage.clear();
-			//this.world.DrawDebugData();
-		} else {
-			this.renderer.render(this.scene, this.camera);
-		}
+		this.renderer.render(this.scene, this.camera);
 	},
 	
 	updateCamera: function() {
@@ -141,3 +133,5 @@ felony.log = function (message) {
 		window.console.log(message);
 	}
 };
+
+felony.game.init();

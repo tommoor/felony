@@ -1,4 +1,26 @@
-felony.Vehicle = Body.extend({
+var Body = require('../body');
+var Config = require('../../config');
+var Controls = require('../../controls');
+var Box2D = require('box-2d-web');
+var THREE = require('three');
+var _ = require('underscore');
+
+var b2Vec2 = Box2D.Common.Math.b2Vec2
+ 	,	b2BodyDef = Box2D.Dynamics.b2BodyDef
+ 	,	b2Body = Box2D.Dynamics.b2Body
+ 	,	b2FixtureDef = Box2D.Dynamics.b2FixtureDef
+ 	,	b2Fixture = Box2D.Dynamics.b2Fixture
+ 	,	b2World = Box2D.Dynamics.b2World
+ 	,	b2MassData = Box2D.Collision.Shapes.b2MassData
+ 	,	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
+ 	,	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
+ 	,	b2DebugDraw = Box2D.Dynamics.b2DebugDraw
+	,	b2RevoluteJointDef = Box2D.Dynamics.Joints.b2RevoluteJointDef
+	,	b2Joint = Box2D.Dynamics.Joints.b2Joint
+	,	b2PrismaticJointDef = Box2D.Dynamics.Joints.b2PrismaticJointDef;
+
+
+module.exports = Body.extend({
 	
 	// properties
 	LENGTH: 0.5,
@@ -103,7 +125,7 @@ felony.Vehicle = Body.extend({
 	render: function() {
 		
 		// temporary graphic
-		var geometry = new THREE.PlaneGeometry(this.LENGTH*felony.game.SCALE*2, this.WIDTH*felony.game.SCALE*2);
+		var geometry = new THREE.PlaneGeometry(this.LENGTH*Config.SCALE*2, this.WIDTH*Config.SCALE*2);
 		var material = new THREE.MeshBasicMaterial({ color: 0x563463 });
 		this.display = new THREE.Mesh(geometry, material);
 		this.display.position.z = 1; // place just above road surface
@@ -156,8 +178,8 @@ felony.Vehicle = Body.extend({
 		// are being pressed
 		this.accelerationCurrent *= 0;
 		
-		this.x = this.display.position.x = p.x*felony.game.SCALE;
-		this.y = this.display.position.y = p.y*felony.game.SCALE;
+		this.x = this.display.position.x = p.x*Config.SCALE;
+		this.y = this.display.position.y = p.y*Config.SCALE;
 		this.display.rotation.z = a; // * (180 / Math.PI);
 	},
 	
@@ -182,12 +204,11 @@ felony.Vehicle = Body.extend({
 	},
 	
 	bindControls: function () {
-		
 		_.bindAll(this, 'steerLeft', 'steerRight', 'accelerate', 'brake');
 		
-		felony.controls.bind('left', this.steerLeft);
-		felony.controls.bind('right', this.steerRight);
-		felony.controls.bind('up', this.accelerate);
-		felony.controls.bind('down', this.brake);
+		Controls.on('left', this.steerLeft);
+		Controls.on('right', this.steerRight);
+		Controls.on('up', this.accelerate);
+		Controls.on('down', this.brake);
 	}
 });

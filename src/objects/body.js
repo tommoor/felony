@@ -1,9 +1,12 @@
+var EventEmitter = require('events').EventEmitter;
+var Config = require('../config');
+var _ = require('underscore');
+
 Body = function() {
 	this.initialize();
 };
 
-_.extend(Body.prototype, Events, {
-	
+_.extend(Body.prototype, {
 	initialize: function() {
 		
 		if (this.render) {
@@ -26,8 +29,8 @@ _.extend(Body.prototype, Events, {
 	
 	SetPosition: function (vector) {
 		if (this.display) {
-			this.display.position.x = vector.x*felony.game.SCALE;
-			this.display.position.y = vector.y*felony.game.SCALE;
+			this.display.position.x = vector.x*Config.SCALE;
+			this.display.position.y = vector.y*Config.SCALE;
 		}
 		
 		if (this.body) {
@@ -35,3 +38,6 @@ _.extend(Body.prototype, Events, {
 		}
 	}
 });
+
+Body.extend = require('../libs/extend');
+module.exports = Body;
