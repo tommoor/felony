@@ -81,12 +81,9 @@ module.exports = Body.extend({
 			d.Multiply(this.accelerationCurrent);
 			this.body.ApplyForce(d, this.body.GetPosition());
 		}
-    
-    // apply steering
-    this.body.ApplyTorque(this.steerCurrent);
-    
+
     // dampen sideways velocity
-    var maxLateralImpulse = 3; // change this to get different levels of 'skid'
+    var maxLateralImpulse = 2.5; // change to get different levels of 'skid'
     var impulse = this.getLateralVelocity();
     impulse.Multiply(-this.body.GetMass());
     if (impulse.Length() > maxLateralImpulse) {
@@ -103,6 +100,11 @@ module.exports = Body.extend({
     var dragForceMagnitude = -2 * currentForwardSpeed;
     currentForwardNormal.Multiply(dragForceMagnitude)
     this.body.ApplyForce(currentForwardNormal, p);
+    
+    // apply steering, we reduce the amount of steering by our current speed
+    // to stop the vehicle spinning on the spot
+    var l = currentForwardNormal.Length();
+    this.body.ApplyTorque(this.steerCurrent * (l/this.accelerationMax));
 
 		// return steering to central position
 		// when no controls are being pressed
