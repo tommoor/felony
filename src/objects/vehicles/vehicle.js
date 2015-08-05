@@ -85,10 +85,13 @@ module.exports = Body.extend({
     // apply steering
     this.body.ApplyTorque(this.steerCurrent);
     
-    // remove sideways velocity
-    // TODO: dampen don't remove
+    // dampen sideways velocity
+    var maxLateralImpulse = 3; // change this to get different levels of 'skid'
     var impulse = this.getLateralVelocity();
     impulse.Multiply(-this.body.GetMass());
+    if (impulse.Length() > maxLateralImpulse) {
+      impulse.Multiply(maxLateralImpulse / impulse.Length());
+    }
     this.body.ApplyImpulse(impulse, p);
     
     // dampen angular velocity
