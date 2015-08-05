@@ -6,6 +6,7 @@ var THREE = require('three');
 var _ = require('underscore');
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2
+  , b2Dot = Box2D.Common.Math.b2Math.Dot
  	,	b2BodyDef = Box2D.Dynamics.b2BodyDef
  	,	b2Body = Box2D.Dynamics.b2Body
  	,	b2FixtureDef = Box2D.Dynamics.b2FixtureDef
@@ -26,27 +27,17 @@ module.exports = Body.extend({
 	LENGTH: 0.5,
 	WIDTH: 1.0,
 	DENSITY: 2.0,
-	DRIVE: 'rear',
-	WHEELOFFSET: 1.3,
+	DRIVE: 'all',
 	
 	health: 1,
 	
-	steerMax: Math.PI/4,
 	steerCurrent: 0,
-	steerIncrement: 3,
-	
-	accelerationMax: 10,
+	accelerationMax: 25,
 	accelerationCurrent: 0,
-	accelerationIncrement: 0.5,
+	accelerationIncrement: 1,
 	
 	// bodies
 	body: null,
-	wheelFrontLeft: null,
-	wheelFrontRight: null,
-	wheelFrontLeftJoint: null,
-	wheelFrontRightJoint: null,
-	wheelRearLeft: null,
-	wheelRearRight: null,
 	
 	initialize: function () {
 		
@@ -66,59 +57,6 @@ module.exports = Body.extend({
 		this.body = felony.game.world.CreateBody(bodyDef);
 		this.body.CreateFixture(fixDef);
 		
-		// create wheel bodies
-		var c = this.body.GetWorldCenter();
-		bodyDef.position.x = c.x-(this.WIDTH/2);
-		bodyDef.position.y = c.y+this.LENGTH*this.WHEELOFFSET;
-		this.wheelFrontLeft = felony.game.world.CreateBody(bodyDef);
-		
-		bodyDef.position.x = c.x+(this.WIDTH/2);
-		bodyDef.position.y = c.y+this.LENGTH*this.WHEELOFFSET;
-		this.wheelFrontRight = felony.game.world.CreateBody(bodyDef);
-		
-		bodyDef.position.x = c.x-(this.WIDTH/2);
-		bodyDef.position.y = c.y-this.LENGTH*this.WHEELOFFSET;
-		this.wheelRearLeft = felony.game.world.CreateBody(bodyDef);
-		
-		bodyDef.position.x = c.x+(this.WIDTH/2);
-		bodyDef.position.y = c.y-this.LENGTH*this.WHEELOFFSET;
-		this.wheelRearRight = felony.game.world.CreateBody(bodyDef);
-		
-		fixDef.density = 1;
-		fixDef.shape.SetAsBox(0.1, 0.2);
-		this.wheelFrontLeft.CreateFixture(fixDef);
-		this.wheelFrontRight.CreateFixture(fixDef);
-		this.wheelRearLeft.CreateFixture(fixDef);
-		this.wheelRearRight.CreateFixture(fixDef);
-		
-		// create a revolute joint definition
-		var jointDef = new b2RevoluteJointDef();
-		jointDef.Initialize(this.body , this.wheelFrontLeft, this.wheelFrontLeft.GetWorldCenter());
-		jointDef.enableMotor = true;
-		jointDef.maxMotorTorque = 100000;
-		jointDef.enableLimit = true;
-		jointDef.lowerAngle =  -1 * this.steerMax;
-		jointDef.upperAngle =  this.steerMax;
-		
-		// attach wheels one by one with joints
-		this.wheelFrontLeftJoint = felony.game.world.CreateJoint(jointDef);
-		
-		jointDef.Initialize(this.body, this.wheelFrontRight, this.wheelFrontRight.GetWorldCenter());
-		this.wheelFrontRightJoint = felony.game.world.CreateJoint(jointDef);
-		
-		// create a prismatic joint definition
-		jointDef = new b2PrismaticJointDef();
-		jointDef.Initialize(this.body, this.wheelRearLeft, this.wheelRearLeft.GetWorldCenter(), new b2Vec2(1, 0));
-		jointDef.lowerTranslation = 0;
-		jointDef.upperTranslation = 0;
-		jointDef.enableLimit = true;
-		
-		// attach wheels one by one with joints
-		felony.game.world.CreateJoint(jointDef);
-		
-		jointDef.Initialize(this.body, this.wheelRearRight, this.wheelRearRight.GetWorldCenter(), new b2Vec2(1, 0));
-		felony.game.world.CreateJoint(jointDef);
-		
 		Body.prototype.initialize.call(this);
 	},
 	
@@ -136,43 +74,36 @@ module.exports = Body.extend({
 	tick: function() {
 		var p = this.body.GetWorldCenter();
 		var a = this.body.GetAngle();
-		var self = this;
-		var wheels = [this.wheelFrontLeft, this.wheelFrontRight, this.wheelRearLeft, this.wheelRearRight];
-		var powered = [];
-		
-		// update rotation of wheels to match steering
-		var s = this.steerCurrent - this.wheelFrontLeftJoint.GetJointAngle();
-		this.wheelFrontLeftJoint.SetMotorSpeed(s * this.steerIncrement);
-		this.wheelFrontRightJoint.SetMotorSpeed(s * this.steerIncrement);
-		
-		// apply driving force to wheels, depending on drive mode
+
+		// apply driving force
 		if (this.accelerationCurrent) {
-			if (this.DRIVE == 'front' || this.DRIVE == 'all') {
-				powered = powered.concat([this.wheelFrontLeft, this.wheelFrontRight]);
-			} else if (this.DRIVE == 'rear' || this.DRIVE == 'all') {
-				powered = powered.concat([this.wheelRearLeft, this.wheelRearRight]);	
-			}
-			
-			_.each(powered, function(wheel){
-		
-				var d = wheel.GetTransform().R.col2.Copy();
-				d.Multiply(self.accelerationCurrent);
-				wheel.ApplyForce(d, wheel.GetPosition());
-			});
+      var d = this.body.GetTransform().R.col2.Copy();
+			d.Multiply(this.accelerationCurrent);
+			this.body.ApplyForce(d, this.body.GetPosition());
 		}
-		
-		// apply sideways friction to all wheels
-		_.each(wheels, function(wheel){
-		
-			var velocity = wheel.GetLinearVelocityFromLocalPoint(new b2Vec2(0,0));
-			var sidewaysAxis = wheel.GetTransform().R.col2.Copy();
-			sidewaysAxis.Multiply( velocity.x*sidewaysAxis.x + velocity.y*sidewaysAxis.y);
-			wheel.SetLinearVelocity(sidewaysAxis);
-		});
-		
+    
+    // apply steering
+    this.body.ApplyTorque(this.steerCurrent);
+    
+    // remove sideways velocity
+    // TODO: dampen don't remove
+    var impulse = this.getLateralVelocity();
+    impulse.Multiply(-this.body.GetMass());
+    this.body.ApplyImpulse(impulse, p);
+    
+    // dampen angular velocity
+    this.body.ApplyTorque( 0.99 * this.body.GetInertia() * -this.body.GetAngularVelocity() );
+    
+    // dampen forward velocity
+    var currentForwardNormal = this.getForwardVelocity();
+    var currentForwardSpeed = currentForwardNormal.Normalize();
+    var dragForceMagnitude = -2 * currentForwardSpeed;
+    currentForwardNormal.Multiply(dragForceMagnitude)
+    this.body.ApplyForce(currentForwardNormal, p);
+
 		// return steering to central position
 		// when no controls are being pressed
-		this.steerCurrent *= 0.5;
+		this.steerCurrent *= 0;
 		
 		// release acceleration when no controls
 		// are being pressed
@@ -182,13 +113,25 @@ module.exports = Body.extend({
 		this.y = this.display.position.y = p.y*Config.SCALE;
 		this.display.rotation.z = a; // * (180 / Math.PI);
 	},
+  
+  getLateralVelocity: function() {
+    var currentRightNormal = this.body.GetWorldVector( new b2Vec2(1,0) );
+    currentRightNormal.Multiply( b2Dot( currentRightNormal, this.body.GetLinearVelocity() ));
+    return currentRightNormal;
+  },
+  
+  getForwardVelocity: function() {
+    var currentRightNormal = this.body.GetWorldVector( new b2Vec2(0,1) );
+    currentRightNormal.Multiply( b2Dot( currentRightNormal, this.body.GetLinearVelocity() ));
+    return currentRightNormal;
+  },
 	
 	steerRight: function () {
-		this.steerCurrent = Math.max(-this.steerMax, this.steerCurrent-(this.steerMax*2));
+		this.steerCurrent = -10;
 	},
 	
 	steerLeft: function () {
-		this.steerCurrent = Math.min(this.steerMax, this.steerCurrent+(this.steerMax*2));
+		this.steerCurrent = 10;
 	},
 	
 	accelerate: function () {
