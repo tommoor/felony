@@ -1,40 +1,44 @@
-felony.camera = _.extend({
+var Controls = require('./controls');
+var Box2D = require('box-2d-web');
+var b2Vec2 = Box2D.Common.Math.b2Vec2;
 
-	offset: new b2Vec2(0,0),
+module.exports = {
+
+	offset: null,
 	target: new b2Vec2(0,0),
-	tracking: null,
-	
 	speed: 10,
-	
+	lookAhead: 30,
+  
 	init: function() {
-	
 		return this;
 	},
 	
 	track: function(body) {
-		this.tracking = body;
+		this.target = body;
 	},
 	
 	update: function() {
-		if (this.tracking) {
-			this.target.x = -this.tracking.x+(felony.interface.width/2);
-			this.target.y = -this.tracking.y+(felony.interface.height/2);
-		}
-		
-		this.offset.x += (this.target.x-this.offset.x)/this.speed;
-		this.offset.y += (this.target.y-this.offset.y)/this.speed;
+    if (!this.offset) {
+      this.offset = new b2Vec2(this.target.x, this.target.y);
+    }
+    
+    // get the speed of body we're tracking and look ahead to where it will be
+    var velocity = this.target.getForwardVelocity();
+    var target = new b2Vec2(this.target.x+(velocity.x*this.lookAhead), this.target.y+(velocity.y*this.lookAhead));
+    
+		this.offset.x += (target.x-this.offset.x)/this.speed;
+		this.offset.y += (target.y-this.offset.y)/this.speed;
 		
 		return this.offset;
 	},
 	
 	bindControls: function() {
-		
 		_.bindAll(this, 'panUp', 'panDown', 'panLeft', 'panRight');
 		
-		felony.controls.bind('left', this.panLeft);
-		felony.controls.bind('right', this.panRight);
-		felony.controls.bind('up', this.panUp);
-		felony.controls.bind('down', this.panDown);
+		Controls.bind('left', this.panLeft);
+		Controls.bind('right', this.panRight);
+		Controls.bind('up', this.panUp);
+		Controls.bind('down', this.panDown);
 	},
 	
 	panUp: function() {
@@ -51,6 +55,5 @@ felony.camera = _.extend({
 	
 	panRight: function() {
 		this.target.x += this.speed;
-	}
-	
-}, Events);
+	}	
+};

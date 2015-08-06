@@ -3,6 +3,7 @@ var THREE = require('three');
 var MapManager = require('./managers/map-manager');
 var Vehicle = require('./objects/vehicles/vehicle');
 var Controls = require('./controls');
+var Camera = require('./camera');
 var Config = require('./config');
 var $ = require('jquery-browserify');
 
@@ -50,6 +51,7 @@ felony.game = {
 		this.map = MapManager.init(new b2Vec2(20, 10));
 		
 		// camera
+    this.tracker = Camera.init();
 		this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
 		this.camera.position.z = 400;
 		
@@ -63,18 +65,11 @@ felony.game = {
 	},
 	
 	restart: function () {
-		
-		//this.menus.hide();
-		
 		this.player = new Vehicle();
 		this.player.bindControls();
 		this.player.SetPosition(new b2Vec2(20, 10));
-		//this.camera.track(this.player);
-		
-		//var temp = new felony.Tile();
-		//temp.body.SetPosition(new b2Vec2(6, 4));
-		// this.camera.bindControls();
-		
+		this.tracker.track(this.player, true);
+
 		// start game loop
 		Ticker.addListener(this);
 		Ticker.setFPS(Config.FRAMERATE);
@@ -104,10 +99,7 @@ felony.game = {
 		this.world.ClearForces();
 		
 		this.updateCamera();
-		
-		// sync graphics with camera position
-		//felony.interface.update();
-		
+
 		// sync tiles with camera position
 		MapManager.update(this.camera.position);
 		
@@ -116,21 +108,10 @@ felony.game = {
 	},
 	
 	updateCamera: function() {
-		//this.target.x = -this.tracking.x+(felony.interface.width/2);
-		//this.target.y = -this.tracking.y+(felony.interface.height/2);
-		
-		//this.offset.x += (this.target.x-this.offset.x)/this.speed;
-		//this.offset.y += (this.target.y-this.offset.y)/this.speed;
-		
-		this.camera.position.x = this.player.x;
-		this.camera.position.y = this.player.y;
-	}
-};
+    var pos = this.tracker.update();
 
-felony.log = function (message) {
-
-	if (window.console) {
-		window.console.log(message);
+		this.camera.position.x = pos.x;
+		this.camera.position.y = pos.y;
 	}
 };
 
