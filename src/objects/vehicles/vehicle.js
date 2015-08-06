@@ -75,6 +75,24 @@ module.exports = Body.extend({
 		var p = this.body.GetWorldCenter();
 		var a = this.body.GetAngle();
 
+    // smoothly snap to 90 degree angles whilst driving
+    var DEGTORAD = 0.0174532925;
+    var NINETYDEG = 90*DEGTORAD;
+    var nextAngle = a + this.body.GetAngularVelocity() / 3.0;
+    var nextSnap = Math.round(a/NINETYDEG)*NINETYDEG;
+    var nextDiff = nextSnap-a;
+    
+    if (Math.abs(nextDiff) < 20*DEGTORAD && !this.steerCurrent) {
+      var totalRotation = nextSnap - nextAngle;
+    
+      while ( totalRotation < -180 * DEGTORAD ) { totalRotation += 360 * DEGTORAD; }
+      while ( totalRotation >  180 * DEGTORAD ) { totalRotation -= 360 * DEGTORAD; }
+    
+      var desiredAngularVelocity = totalRotation * 10;
+      var torque = this.body.GetInertia() * desiredAngularVelocity / (1/3.0);
+      this.body.ApplyTorque( torque );
+    }
+    
 		// apply driving force
 		if (this.accelerationCurrent) {
       var d = this.body.GetTransform().R.col2.Copy();
@@ -116,7 +134,7 @@ module.exports = Body.extend({
 		
 		this.x = this.display.position.x = p.x*Config.SCALE;
 		this.y = this.display.position.y = p.y*Config.SCALE;
-		this.display.rotation.z = a; // * (180 / Math.PI);
+		this.display.rotation.z = a;
 	},
   
   getLateralVelocity: function() {
