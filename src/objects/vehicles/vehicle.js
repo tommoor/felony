@@ -64,10 +64,9 @@ module.exports = Body.extend({
 		
 		// temporary graphic
 		var geometry = new THREE.PlaneGeometry(this.LENGTH*Config.SCALE*2, this.WIDTH*Config.SCALE*2);
-		var material = new THREE.MeshBasicMaterial({ color: 0x563463 });
+		var material = new THREE.MeshLambertMaterial({ color: 0x563463 });
 		this.display = new THREE.Mesh(geometry, material);
 		this.display.position.z = 1; // place just above road surface
-		
 		return this.display;
 	},
 	

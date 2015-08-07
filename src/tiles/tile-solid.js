@@ -42,9 +42,10 @@ module.exports = Tile.extend({
 			geometry.faces[i].color.setHex( Math.random() * 0xffffff );
 		}
 		
-		var material = new THREE.MeshBasicMaterial({ vertexColors: THREE.FaceColors });
+		var material = new THREE.MeshLambertMaterial({ vertexColors: THREE.FaceColors });
 		this.display = new THREE.Mesh(geometry, material);
 		this.display.position.z = height/2;
+    this.display.castShadow = true;
 		return this.display;
 	}
 });
