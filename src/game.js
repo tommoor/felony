@@ -52,43 +52,20 @@ felony.game = {
 		
     // lights
     var ambientLight = new THREE.AmbientLight( 0x404040 ); // soft white light
-    //this.scene.add( ambientLight );
+    this.scene.add( ambientLight );
 
     var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.8 );
     directionalLight.position.set(300, 400, 1000)
-    directionalLight.castShadow = true;
-    directionalLight.shadowCameraVisible = true;
-    var d = 2000;
-    var light = directionalLight;
-    light.shadowCameraLeft = -d;
-    light.shadowCameraRight = d;
-    light.shadowCameraTop = d;
-    light.shadowCameraBottom = -d;
-        
     this.scene.add( directionalLight );
-    this.scene.add( new THREE.DirectionalLightHelper(directionalLight, 0.2) );
     
 		// camera
     this.tracker = Camera.init();
 		this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
 		this.camera.position.z = 400;
-    
-    
-		// setup rendering
-		renderer = new THREE.WebGLRenderer();
-		renderer.setSize( window.innerWidth, window.innerHeight );
-    renderer.shadowMapEnabled = true;    
-    renderer.shadowMapSoft = false;
-/*
-    renderer.shadowCameraNear = 3;
-    renderer.shadowCameraFar = this.camera.far;
-    renderer.shadowCameraFov = 50;
 
-    renderer.shadowMapBias = 0.0039;
-    renderer.shadowMapDarkness = 0.5;
-    renderer.shadowMapWidth = 1024;
-    renderer.shadowMapHeight = 1024;*/
-    this.renderer = renderer;
+		// setup rendering
+		this.renderer = new THREE.WebGLRenderer();
+		this.renderer.setSize( window.innerWidth, window.innerHeight );
 
 		document.getElementById('world').appendChild(this.renderer.domElement);
 		
