@@ -3,7 +3,7 @@ var THREE = require('three');
 var MapManager = require('./managers/map-manager');
 var Vehicle = require('./objects/vehicles/vehicle');
 var Controls = require('./controls');
-var Camera = require('./camera');
+var TrackingCamera = require('./camera');
 var Config = require('./config');
 var $ = require('jquery-browserify');
 
@@ -45,9 +45,7 @@ felony.game = {
 			new b2Vec2(0, 0),     // gravity
 			true                  // allow sleep
 		);
-		
-		//this.world.SetDebugDraw(felony.interface.debugger);
-		
+
 		this.map = MapManager.init(new b2Vec2(20, 10));
 		
     // lights
@@ -59,9 +57,7 @@ felony.game = {
     this.scene.add( directionalLight );
     
 		// camera
-    this.tracker = Camera.init();
-		this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
-		this.camera.position.z = 400;
+    this.camera = new TrackingCamera();
 
 		// setup rendering
 		this.renderer = new THREE.WebGLRenderer();
@@ -77,7 +73,7 @@ felony.game = {
 		this.player = new Vehicle();
 		this.player.bindControls();
 		this.player.SetPosition(new b2Vec2(20, 10));
-		this.tracker.track(this.player, true);
+		this.camera.track(this.player);
 
 		// start game loop
 		Ticker.addListener(this);
@@ -107,20 +103,14 @@ felony.game = {
 		);
 		this.world.ClearForces();
 		
-		this.updateCamera();
+    // update camera position with momentum etc
+		this.camera.update();
 
-		// sync tiles with camera position
-		MapManager.update(this.camera.position);
+		// sync assets with camera position
+		MapManager.update(this.camera.camera);
 		
-		// rendering
-		this.renderer.render(this.scene, this.camera);
-	},
-	
-	updateCamera: function() {
-    var pos = this.tracker.update();
-
-		this.camera.position.x = pos.x;
-		this.camera.position.y = pos.y;
+		// render assets
+		this.renderer.render(this.scene, this.camera.camera);
 	}
 };
 

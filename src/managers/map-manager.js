@@ -29,14 +29,11 @@ module.exports = _.extend({
 				this.createTile(x, y);
 			}
 		}
-		
-		console.log('init map');
-		console.log(this.tileOffset.y + " to " + h);
-		console.log(this.tileOffset.x + " to " + w);
 	},
 	
-	update: function(vector) {
+	update: function(camera) {
 		
+    var vector = camera.position;
 		var currentY = Math.round(vector.y/this.tile.HEIGHT/Config.SCALE) - (this.visibleHeight/2);
 		var currentX = Math.round(vector.x/this.tile.WIDTH/Config.SCALE) - (this.visibleWidth/2);
 		
