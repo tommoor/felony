@@ -4,6 +4,7 @@ var Config = require('../config');
 var Tile = require('../tiles/tile');
 var TileSolid = require('../tiles/tile-solid');
 var TileRoad = require('../tiles/tile-road');
+var TileBanner = require('../tiles/tile-banner');
 var Box2D = require('box-2d-web');
 var b2Vec2 = Box2D.Common.Math.b2Vec2;
 var _ = require('underscore');
@@ -119,6 +120,7 @@ module.exports = _.extend({
 		if (opts.s == 0) var t = new Tile();
 		if (opts.s == 1) var t = new TileSolid();
 		if (opts.s == 2) var t = new TileRoad();
+		if (opts.s == 3) var t = new TileBanner();
 		
 		t.SetPosition(new b2Vec2(x*t.WIDTH, y*t.HEIGHT));
 		if (!this.tiles[y]) this.tiles[y] = [];
