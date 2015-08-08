@@ -38,9 +38,9 @@ module.exports = _.extend({
 		var currentX = Math.round(vector.x/this.tile.WIDTH/Config.SCALE) - (this.visibleWidth/2);
 		
 		// debugging
-		if (currentX != this.tileOffset.x || currentY != this.tileOffset.y) {
-			console.log(currentX + " - " + currentY);
-		}
+		//if (currentX != this.tileOffset.x || currentY != this.tileOffset.y) {
+		//	console.log(currentX + " - " + currentY);
+		//}
 		
 		// up
 		if (currentY > this.tileOffset.y) {
