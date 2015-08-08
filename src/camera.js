@@ -27,33 +27,41 @@ _.extend(TrackingCamera.prototype, {
       this.offset = new b2Vec2(this.target.x, this.target.y);
     }
 
+    var target;
+    var autoZoom = 0;
+    
     // get the speed of body we're tracking and look ahead to where it will be
-    var velocity = this.target.getForwardVelocity();
-    var target = new b2Vec2(this.target.x+(velocity.x*this.lookAhead), this.target.y+(velocity.y*this.lookAhead));
+    if (this.lookAhead) {
+      var velocity = this.target.getForwardVelocity();
+      target = new b2Vec2(this.target.x+(velocity.x*this.lookAhead), this.target.y+(velocity.y*this.lookAhead));
+      autoZoom = (velocity.Length() * velocity.Length());
+    } else {
+      target = this.target;
+    }
 
     this.offset.x += (target.x-this.offset.x)/this.speed;
     this.offset.y += (target.y-this.offset.y)/this.speed;
 
     this.camera.position.x = this.offset.x;
     this.camera.position.y = this.offset.y;
-    this.camera.position.z = this.zoom + (velocity.Length() * velocity.Length());
+    this.camera.position.z = this.zoom + autoZoom;
 	},
 
 	bindControls: function() {
 		_.bindAll(this, 'panUp', 'panDown', 'panLeft', 'panRight');
 	
-		Controls.bind('left', this.panLeft);
-		Controls.bind('right', this.panRight);
-		Controls.bind('up', this.panUp);
-		Controls.bind('down', this.panDown);
+		Controls.on('left', this.panLeft);
+		Controls.on('right', this.panRight);
+		Controls.on('up', this.panUp);
+		Controls.on('down', this.panDown);
 	},
 
 	panUp: function() {
-		this.target.y -= this.speed;
+		this.target.y += this.speed;
 	},
 
 	panDown: function() {
-		this.target.y += this.speed;
+		this.target.y -= this.speed;
 	},
 
 	panLeft: function() {

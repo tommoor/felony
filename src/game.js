@@ -49,12 +49,24 @@ felony.game = {
 		this.map = MapManager.init(new b2Vec2(20, 10));
 		
     // lights
-    var ambientLight = new THREE.AmbientLight( 0x404040 ); // soft white light
-    this.scene.add( ambientLight );
+    var hemiLight = new THREE.HemisphereLight( 0x0000ff, 0x00ff00, 0.6 ); 
+    this.scene.add( hemiLight );
 
-    var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.8 );
-    directionalLight.position.set(300, 400, 1000)
-    this.scene.add( directionalLight );
+    // sunlight
+    var sunlight = new THREE.DirectionalLight( 0xffffff, 0.8 );
+    sunlight.castShadow = true;
+    sunlight.shadowDarkness = 0.4;
+    sunlight.shadowMapWidth = sunlight.shadowMapHeight = 2048;
+    sunlight.shadowCameraNear = 250;
+    sunlight.shadowCameraFar = 1000;
+    sunlight.shadowCameraLeft = -1000;
+    sunlight.shadowCameraRight = 1000;
+    sunlight.shadowCameraTop = 1000;
+    sunlight.shadowCameraBottom = -1000;
+
+    this.sunlight = sunlight;
+    this.scene.add(sunlight);
+    this.scene.add(sunlight.target);
     
 		// camera
     this.camera = new TrackingCamera();
@@ -62,6 +74,7 @@ felony.game = {
 		// setup rendering
 		this.renderer = new THREE.WebGLRenderer();
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
+    this.renderer.shadowMapEnabled = true;
 
 		document.getElementById('world').appendChild(this.renderer.domElement);
 		
@@ -72,6 +85,12 @@ felony.game = {
 	restart: function () {
 		this.player = new Vehicle();
 		this.player.bindControls();
+    
+    // manual camera controls
+		//this.camera.bindControls();
+    //this.camera.lookAhead = 0;
+    //this.camera.zoom = 600;
+    
 		this.player.SetPosition(new b2Vec2(20, 10));
 		this.camera.track(this.player);
 
@@ -105,6 +124,12 @@ felony.game = {
 		
     // update camera position with momentum etc
 		this.camera.update();
+    
+    // sync sunlight with camera, unfortunately this is needed due to the 
+    // limited area that the sunlight shadows are calculated within
+    var pos = this.camera.camera.position;
+    this.sunlight.target.position.set(pos.x, pos.y, 0);
+    this.sunlight.position.set(pos.x-250, pos.y-250, 600);
 
 		// sync assets with camera position
 		MapManager.update(this.camera.camera);
