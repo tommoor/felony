@@ -14,9 +14,23 @@ _.extend(Body.prototype, {
 		if (this.render) {
 			felony.game.scene.add(this.render());
 		}
-		
+    
+    if (this.body) {
+      this.body.SetUserData(this);
+    }
+
 		Ticker.addListener(this);
 	},
+
+  hide: function() {
+    this.body.SetActive(false);
+    this.display.traverse(function ( object ) { object.visible = false; } );
+  },
+
+  show: function() {
+    this.body.SetActive(true);
+    this.display.traverse(function ( object ) { object.visible = true; } );
+  },
 	
 	destroy: function () {
 		

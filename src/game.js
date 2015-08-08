@@ -82,6 +82,9 @@ felony.game = {
 	},
 	
 	restart: function () {
+    var v = new Vehicle();
+		v.SetPosition(new b2Vec2(20, 15));
+    
 		this.player = new Person();
 		this.player.bindControls();
     

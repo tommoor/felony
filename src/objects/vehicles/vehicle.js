@@ -19,6 +19,7 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2
 module.exports = Body.extend({
 	
 	// properties
+  TYPE: 'vehicle',
 	LENGTH: 0.5,
 	WIDTH: 1.0,
 	DENSITY: 2.0,

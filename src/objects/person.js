@@ -6,6 +6,7 @@ var THREE = require('three');
 var _ = require('underscore');
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2
+  , b2AABB = Box2D.Collision.b2AABB
   , b2Dot = Box2D.Common.Math.b2Math.Dot
  	,	b2BodyDef = Box2D.Dynamics.b2BodyDef
  	,	b2Body = Box2D.Dynamics.b2Body
@@ -20,7 +21,8 @@ module.exports = Body.extend({
 	SIZE: 0.15,
 	DENSITY: 1.0,
 	SPEED: 3,
-
+  VEHICLE_ENTER_DISTANCE: 2,
+  
 	health: 1,
   direction: new b2Vec2(0,0),
 	rotation: 0,
@@ -106,12 +108,56 @@ module.exports = Body.extend({
 		this.direction.y = -1;
 	},
 
-	bindControls: function () {
-		_.bindAll(this, 'moveLeft', 'moveRight', 'moveUp', 'moveDown');
+  // TODO: refactor this logic out of person, upto game level
+  enterVehicle: function() {
+    // find vehicle
+    var vehicle = this.getClosestVehicle();
+    
+    // enter vehicle
+    if(vehicle) {
+      this.hide();
+      this.unbindControls();
+      vehicle.bindControls();
+      felony.game.camera.track(vehicle);
+    }
+  },
+  
+  getClosestVehicle: function() {
+    var aabb = new b2AABB();
+		var p = this.body.GetWorldCenter();
+    aabb.lowerBound.Set(p.x - this.VEHICLE_ENTER_DISTANCE, p.y - this.VEHICLE_ENTER_DISTANCE);
+    aabb.upperBound.Set(p.x + this.VEHICLE_ENTER_DISTANCE, p.y + this.VEHICLE_ENTER_DISTANCE);
+    
+    // query the world for overlapping shapes.
+    var closest;
+    felony.game.world.QueryAABB(function(fixture){
+      // TODO: this just picks the last right now, actually get the closest
+      var data = fixture.GetBody().GetUserData();
+      if (data.TYPE == 'vehicle') {
+        closest = data;
+        return false;
+      }
+      return true;
+    }, aabb);
+    
+    return closest;
+  },
+
+  unbindControls: function() {
+		Controls.removeListener('left', this.moveLeft);
+		Controls.removeListener('right', this.moveRight);
+		Controls.removeListener('up', this.moveUp);
+		Controls.removeListener('down', this.moveDown);
+		Controls.removeListener('enter', this.enterVehicle);
+  },
+  
+	bindControls: function() {
+		_.bindAll(this, 'moveLeft', 'moveRight', 'moveUp', 'moveDown', 'enterVehicle');
 		
 		Controls.on('left', this.moveLeft);
 		Controls.on('right', this.moveRight);
 		Controls.on('up', this.moveUp);
 		Controls.on('down', this.moveDown);
+		Controls.on('enter', this.enterVehicle);
 	}
 });

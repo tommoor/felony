@@ -12,6 +12,7 @@ module.exports = _.extend({
 		'down':     40,
 		'left':     37,
 		'right':    39,
+		'enter':    13,
 		'space':    32,
 		'p':        80,
 		'd':        68
