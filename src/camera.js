@@ -33,8 +33,9 @@ _.extend(TrackingCamera.prototype, {
     // get the speed of body we're tracking and look ahead to where it will be
     if (this.lookAhead) {
       var velocity = this.target.getForwardVelocity();
+      var vel = velocity.Length();
       target = new b2Vec2(this.target.x+(velocity.x*this.lookAhead), this.target.y+(velocity.y*this.lookAhead));
-      autoZoom = (velocity.Length() * velocity.Length());
+      if (vel > 5) autoZoom = vel*vel;
     } else {
       target = this.target;
     }

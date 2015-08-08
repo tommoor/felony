@@ -2,6 +2,7 @@ var Box2D = require('box-2d-web');
 var THREE = require('three');
 var MapManager = require('./managers/map-manager');
 var Vehicle = require('./objects/vehicles/vehicle');
+var Person = require('./objects/person');
 var Controls = require('./controls');
 var TrackingCamera = require('./camera');
 var Config = require('./config');
@@ -81,7 +82,7 @@ felony.game = {
 	},
 	
 	restart: function () {
-		this.player = new Vehicle();
+		this.player = new Person();
 		this.player.bindControls();
     
     // manual camera controls

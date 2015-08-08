@@ -1,6 +1,9 @@
 var EventEmitter = require('events').EventEmitter;
 var Config = require('../config');
+var Box2D = require('box-2d-web');
 var _ = require('underscore');
+var b2Vec2 = Box2D.Common.Math.b2Vec2
+  , b2Dot = Box2D.Common.Math.b2Math.Dot;
 
 Body = function() {
 	this.initialize();
@@ -35,7 +38,19 @@ _.extend(Body.prototype, {
 		if (this.body) {
 			this.body.SetPosition(vector);
 		}
-	}
+	},
+  
+  getLateralVelocity: function() {
+    var currentRightNormal = this.body.GetWorldVector( new b2Vec2(1,0) );
+    currentRightNormal.Multiply( b2Dot( currentRightNormal, this.body.GetLinearVelocity() ));
+    return currentRightNormal;
+  },
+  
+  getForwardVelocity: function() {
+    var currentRightNormal = this.body.GetWorldVector( new b2Vec2(0,1) );
+    currentRightNormal.Multiply( b2Dot( currentRightNormal, this.body.GetLinearVelocity() ));
+    return currentRightNormal;
+  }
 });
 
 Body.extend = require('../libs/extend');

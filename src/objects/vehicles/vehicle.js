@@ -13,12 +13,7 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2
  	,	b2Fixture = Box2D.Dynamics.b2Fixture
  	,	b2World = Box2D.Dynamics.b2World
  	,	b2MassData = Box2D.Collision.Shapes.b2MassData
- 	,	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
- 	,	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
- 	,	b2DebugDraw = Box2D.Dynamics.b2DebugDraw
-	,	b2RevoluteJointDef = Box2D.Dynamics.Joints.b2RevoluteJointDef
-	,	b2Joint = Box2D.Dynamics.Joints.b2Joint
-	,	b2PrismaticJointDef = Box2D.Dynamics.Joints.b2PrismaticJointDef;
+  ,	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape;
 
 
 module.exports = Body.extend({
@@ -27,7 +22,6 @@ module.exports = Body.extend({
 	LENGTH: 0.5,
 	WIDTH: 1.0,
 	DENSITY: 2.0,
-	DRIVE: 'all',
 	
 	health: 1,
 	
