@@ -12,7 +12,6 @@ module.exports = Body.extend({
 		// temporary graphic
 		var geometry = new THREE.PlaneGeometry(150, 150);
 		var material = new THREE.MeshLambertMaterial({ color: this.COLOUR });
-		
 		this.display = new THREE.Mesh(geometry, material);
 		this.display.receiveShadow = true;
     return this.display;

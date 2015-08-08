@@ -36,16 +36,13 @@ module.exports = Tile.extend({
 	render: function() {
 		// temporary graphic
     var height = 100 + (Math.random()*200);
-		var geometry = new THREE.CubeGeometry(150, 150, height);
-		
-		for (var i = 0; i < geometry.faces.length; i++) {
-			geometry.faces[i].color.setHex( Math.random() * 0xffffff );
-		}
-		
-		var material = new THREE.MeshLambertMaterial({ vertexColors: THREE.FaceColors });
+		var geometry = new THREE.BoxGeometry(150, 150, height);
+
+    var material = new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff, vertexColors: THREE.VertexColors } );
 		this.display = new THREE.Mesh(geometry, material);
 		this.display.position.z = height/2;
     this.display.castShadow = true;
+		//this.display.receiveShadow = true;
 		return this.display;
 	}
 });

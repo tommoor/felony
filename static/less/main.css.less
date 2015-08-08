@@ -4,45 +4,20 @@ body, html {
 	text-align: center;
 	font-family: Arial;
 	font-size: 25px;
-	
-    -moz-user-select: -moz-none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
-    /*3D transform */
-    -webkit-transform: scale3d(1, 1, 1);
-    -o-user-select: none;
-    user-select: none;
+	overflow: hidden;
+
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  /*3D transform */
+  -webkit-transform: scale3d(1, 1, 1);
+  -o-user-select: none;
+  user-select: none;
 }
 
 .game {
 	position: relative;
 	margin: 0 auto;
-}
-
-.hud {
-	color: rgba(0,0,0,0.8);
-	width: 100%;
-	position: absolute;
-	top: 0;
-	left: 0;
-}
-
-.hud .points {
-	position: absolute;
-	top: 10px;
-	left: 10px;
-}
-
-.hud .lives {
-	position: absolute;
-	top: 10px;
-	right: 10px;
-}
-
-.hud .bombs {
-	position: absolute;
-	top: 40px;
-	right: 10px;
 }
 
 .menus {
@@ -82,12 +57,6 @@ body, html {
 #world {
 	background: #f9f9f9;
 	position: relative;
-}
-
-#debugger {
-	position: absolute;
-	top: 0;
-	left: 0;
 }
 
 @media(max-width:1024px) {

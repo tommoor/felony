@@ -3,6 +3,7 @@ module.exports = {
     files: ['src/**/*.js'],
     tasks: ['browserify'],
     options: {
+      livereload: true,
       spawn: false
     }
   }

@@ -67,7 +67,8 @@ module.exports = Body.extend({
 		var material = new THREE.MeshLambertMaterial({ color: 0x563463 });
 		this.display = new THREE.Mesh(geometry, material);
 		this.display.position.z = 1; // place just above road surface
-		return this.display;
+		this.display.receiveShadow = true;
+    return this.display;
 	},
 	
 	tick: function() {

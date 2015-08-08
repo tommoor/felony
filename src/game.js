@@ -39,7 +39,6 @@ felony.game = {
 
 		this.controls = Controls.init();
 		this.scene = new THREE.Scene();
-		this.scene.add(new THREE.AxisHelper(1000));
 
 		this.world = new b2World(
 			new b2Vec2(0, 0),     // gravity
@@ -49,16 +48,16 @@ felony.game = {
 		this.map = MapManager.init(new b2Vec2(20, 10));
 		
     // lights
-    var hemiLight = new THREE.HemisphereLight( 0x0000ff, 0x00ff00, 0.6 ); 
+    var hemiLight = new THREE.HemisphereLight( 0x0000ff, 0x00ff00, 0.4 ); 
     this.scene.add( hemiLight );
 
     // sunlight
-    var sunlight = new THREE.DirectionalLight( 0xffffff, 0.8 );
+    var sunlight = new THREE.DirectionalLight( 0xffffff, 0.1 );
     sunlight.castShadow = true;
-    sunlight.shadowDarkness = 0.4;
-    sunlight.shadowMapWidth = sunlight.shadowMapHeight = 2048;
-    sunlight.shadowCameraNear = 250;
-    sunlight.shadowCameraFar = 1000;
+    sunlight.shadowDarkness = 0.3;
+    sunlight.shadowMapWidth = sunlight.shadowMapHeight = 1024;
+    sunlight.shadowCameraNear = 0;
+    sunlight.shadowCameraFar = 1500;
     sunlight.shadowCameraLeft = -1000;
     sunlight.shadowCameraRight = 1000;
     sunlight.shadowCameraTop = 1000;
@@ -66,7 +65,6 @@ felony.game = {
 
     this.sunlight = sunlight;
     this.scene.add(sunlight);
-    this.scene.add(sunlight.target);
     
 		// camera
     this.camera = new TrackingCamera();
@@ -129,8 +127,8 @@ felony.game = {
     // limited area that the sunlight shadows are calculated within
     var pos = this.camera.camera.position;
     this.sunlight.target.position.set(pos.x, pos.y, 0);
-    this.sunlight.position.set(pos.x-250, pos.y-250, 600);
-
+    this.sunlight.position.set(pos.x-400, pos.y-400, 600);
+    
 		// sync assets with camera position
 		MapManager.update(this.camera.camera);
 		
@@ -140,3 +138,5 @@ felony.game = {
 };
 
 felony.game.init();
+
+window.THREE = THREE;
