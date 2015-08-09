@@ -99,10 +99,15 @@ module.exports = Body.extend({
 
     // dampen sideways velocity
     var maxLateralImpulse = 2.5; // change to get different levels of 'skid'
+    var maxLateralImpulseMarks = 10; // change to get different levels of 'skid'
     var impulse = this.getLateralVelocity();
     impulse.Multiply(-this.body.GetMass());
-    if (impulse.Length() > maxLateralImpulse) {
+    var impulseLength = impulse.Length();
+    if (impulseLength > maxLateralImpulse) {
       impulse.Multiply(maxLateralImpulse / impulse.Length());
+      if (impulseLength > maxLateralImpulseMarks) {
+        this.drawSkidMarks();
+      }
     }
     this.body.ApplyImpulse(impulse, p);
     
@@ -135,16 +140,45 @@ module.exports = Body.extend({
 		this.display.rotation.z = a;
 	},
   
+  drawSkidMarks: function() {
+		var p = this.body.GetWorldCenter();
+		var av = this.body.GetLinearVelocity();
+    var a = Math.atan2(-av.x, av.y);
+		var geometry = new THREE.PlaneGeometry(0.05*Config.SCALE*2, av.Length()*2);
+		var material = new THREE.MeshLambertMaterial({ color: 0x303030 });
+
+    // back left
+		var skid = new THREE.Mesh(geometry, material);
+    var offset = Utils.Rotateb2Vec2(new b2Vec2((this.WIDTH/2.5), -this.LENGTH*2), a);
+    
+    // add on the vehicles global position
+    offset.Add(p);
+    
+    skid.position = new THREE.Vector3(offset.x*Config.SCALE, offset.y*Config.SCALE, 0.5);
+		skid.rotation.z = a;
+    skid.receiveShadow = true;
+    felony.game.scene.add(skid);
+    
+    // back right
+		var skid = new THREE.Mesh(geometry, material);
+    var offset = Utils.Rotateb2Vec2(new b2Vec2(-(this.WIDTH/2.5), -this.LENGTH*2), a);
+    
+    // add on the vehicles global position
+    offset.Add(p);
+    
+    skid.position = new THREE.Vector3(offset.x*Config.SCALE, offset.y*Config.SCALE, 0.5);
+		skid.rotation.z = a;
+    skid.receiveShadow = true;
+    felony.game.scene.add(skid);
+  },
+  
   getDriverDoorPosition: function() {
 		var p = this.body.GetWorldCenter();
 		var a = this.body.GetAngle();
     
     // gets the offset of the drivers door and rotates it to the current
     // angle of the vehicle
-    var offset = Utils.Rotateb2Vec2(new b2Vec2(
-      (this.WIDTH/2)+0.2,
-      this.LENGTH*this.DOOR_OFFSET
-    ), a);
+    var offset = Utils.Rotateb2Vec2(new b2Vec2((this.WIDTH/2)+0.2, this.LENGTH*this.DOOR_OFFSET), a);
     
     // add on the vehicles global position
     offset.Add(p);
