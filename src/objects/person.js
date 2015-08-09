@@ -14,12 +14,11 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2
  	,	b2Fixture = Box2D.Dynamics.b2Fixture
   ,	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
 
-
 module.exports = Body.extend({
 	
 	// properties
 	SIZE: 0.15,
-	DENSITY: 1.0,
+	DENSITY: 0.1,
 	SPEED: 3,
   VEHICLE_ENTER_DISTANCE: 2,
   
@@ -133,7 +132,7 @@ module.exports = Body.extend({
     felony.game.world.QueryAABB(function(fixture){
       // TODO: this just picks the last right now, actually get the closest
       var data = fixture.GetBody().GetUserData();
-      if (data.TYPE == 'vehicle') {
+      if (data && data.TYPE == 'vehicle') {
         closest = data;
         return false;
       }
@@ -148,7 +147,7 @@ module.exports = Body.extend({
 		Controls.removeListener('right', this.moveRight);
 		Controls.removeListener('up', this.moveUp);
 		Controls.removeListener('down', this.moveDown);
-		Controls.removeListener('enter', this.enterVehicle);
+		Controls.removeListener('enterPressed', this.enterVehicle);
   },
   
 	bindControls: function() {
@@ -158,6 +157,6 @@ module.exports = Body.extend({
 		Controls.on('right', this.moveRight);
 		Controls.on('up', this.moveUp);
 		Controls.on('down', this.moveDown);
-		Controls.on('enter', this.enterVehicle);
+		Controls.on('enterPressed', this.enterVehicle);
 	}
 });

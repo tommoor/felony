@@ -1,6 +1,7 @@
 var Body = require('../body');
 var Config = require('../../config');
 var Controls = require('../../controls');
+var Utils = require('../../libs/utils');
 var Box2D = require('box-2d-web');
 var THREE = require('three');
 var _ = require('underscore');
@@ -23,7 +24,8 @@ module.exports = Body.extend({
 	LENGTH: 0.5,
 	WIDTH: 1.0,
 	DENSITY: 2.0,
-	
+	DOOR_OFFSET: 1.3,
+
 	health: 1,
 	
 	steerCurrent: 0,
@@ -132,16 +134,20 @@ module.exports = Body.extend({
 		this.display.rotation.z = a;
 	},
   
-  getLateralVelocity: function() {
-    var currentRightNormal = this.body.GetWorldVector( new b2Vec2(1,0) );
-    currentRightNormal.Multiply( b2Dot( currentRightNormal, this.body.GetLinearVelocity() ));
-    return currentRightNormal;
-  },
-  
-  getForwardVelocity: function() {
-    var currentRightNormal = this.body.GetWorldVector( new b2Vec2(0,1) );
-    currentRightNormal.Multiply( b2Dot( currentRightNormal, this.body.GetLinearVelocity() ));
-    return currentRightNormal;
+  getDriverDoorPosition: function() {
+		var p = this.body.GetWorldCenter();
+		var a = this.body.GetAngle();
+    
+    // gets the offset of the drivers door and rotates it to the current
+    // angle of the vehicle
+    var offset = Utils.Rotateb2Vec2(new b2Vec2(
+      (this.WIDTH/2)+0.2,
+      this.LENGTH*this.DOOR_OFFSET
+    ), a);
+    
+    // add on the vehicles global position
+    offset.Add(p);
+    return offset;
   },
 	
 	steerRight: function () {
@@ -160,16 +166,32 @@ module.exports = Body.extend({
 		this.accelerationCurrent = Math.max(-this.accelerationMax, this.accelerationCurrent-this.accelerationIncrement);
 	},
 	
-	explode: function () {
-		// todo
+	leaveVehicle: function () {
+    var player = felony.game.player;
+    this.unbindControls();
+
+    player.SetPosition(this.getDriverDoorPosition());
+    player.show();
+    player.bindControls();
+
+    felony.game.camera.track(player);
 	},
+  
+  unbindControls: function() {
+		Controls.removeListener('left', this.steerLeft);
+		Controls.removeListener('right', this.steerRight);
+		Controls.removeListener('up', this.accelerate);
+		Controls.removeListener('down', this.brake);
+		Controls.removeListener('enterPressed', this.leaveVehicle);
+  },
 	
 	bindControls: function () {
-		_.bindAll(this, 'steerLeft', 'steerRight', 'accelerate', 'brake');
+		_.bindAll(this, 'steerLeft', 'steerRight', 'accelerate', 'brake', 'leaveVehicle');
 		
 		Controls.on('left', this.steerLeft);
 		Controls.on('right', this.steerRight);
 		Controls.on('up', this.accelerate);
 		Controls.on('down', this.brake);
+		Controls.on('enterPressed', this.leaveVehicle);
 	}
 });

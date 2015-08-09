@@ -4,9 +4,7 @@ var _ = require('underscore');
 module.exports = _.extend({
 
 	keys: {},
-	touches: {},
-	touch: false,
-	
+
 	keyMapping: {
 		'up':       38,
 		'down':     40,
@@ -17,14 +15,8 @@ module.exports = _.extend({
 		'p':        80,
 		'd':        68
 	},
-	
-	touchMapping: {
-		'left':     'joy-left',
-		'right': 	  'joy-right'
-	},
-	
+
 	init: function () {
-		
 		this.bindEvents();
 		return this;
 	},
@@ -39,17 +31,6 @@ module.exports = _.extend({
 			// include the time that a key has been pressed in emitted event
 			if (o) this.emit(keyname, c-o);
 		}
-		
-		// only check for touch input if supported
-		if (this.touch) {
-			
-			for(var keyname in this.touchMapping) {
-				o = this.isTouched(keyname);
-				
-				// include the time that a key has been pressed in emitted event
-				if (o) this.emit(keyname, c-o);
-			}
-		}
 	},
 	
 	keyDown: function (ev) {
@@ -57,10 +38,15 @@ module.exports = _.extend({
 		
 		// record when this key was pressed down
 		this.keys[key] = (new Date()).getTime();
+    
+    var self = this;
+    var keyName = Object.keys(this.keyMapping).filter(function(a) {return self.keyMapping[a] === key})[0];
+    this.emit(keyName + 'Pressed', true);
 	},
 	
 	keyUp: function (ev) {
 		var key = ev.keyCode || window.event.keyCode;
+    
 		this.keys[key] = false;
 	},
 	
@@ -71,32 +57,11 @@ module.exports = _.extend({
 		
 		return this.keys[key];
 	},
-	
-	isTouched: function (key) {
-		key = this.touchMapping[key];        
-		return this.touches[key];
-	},
-	
-	touchEnable: function () {
-		this.touch = true;
-	},
-	
-	touchStart: function (ev) {
-		this.touches[ev.currentTarget.id] = (new Date()).getTime();
-	},
-	
-	touchEnd: function (ev) {
-		this.touches[ev.currentTarget.id] = false;
-	},
-	
+
 	bindEvents: function () {
-		_.bindAll(this, 'keyDown', 'keyUp', 'touchStart', 'touchEnd', 'touchEnable');
+		_.bindAll(this, 'keyDown', 'keyUp');
 		
 		$(window).bind('keydown', this.keyDown);
 		$(window).bind('keyup', this.keyUp);
-
-		//$(window).bind('touchstart', this.touchEnable);
-		//$('.joystick').bind('touchstart', this.touchStart);
-		//$('.joystick').bind('touchend', this.touchEnd);
 	}
 }, EventEmitter.prototype);
