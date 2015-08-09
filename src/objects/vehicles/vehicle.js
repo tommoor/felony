@@ -119,7 +119,8 @@ module.exports = Body.extend({
     // apply steering, we reduce the amount of steering by our current speed
     // to stop the vehicle spinning on the spot
     var l = currentForwardNormal.Length();
-    this.body.ApplyTorque(this.steerCurrent * (l/this.accelerationMax));
+    var direction = l > 0 ? 1 : -1;
+    this.body.ApplyTorque(direction * this.steerCurrent * (l/this.accelerationMax));
 
 		// return steering to central position
 		// when no controls are being pressed
@@ -163,8 +164,8 @@ module.exports = Body.extend({
 	},
 	
 	brake: function () {
-		this.accelerationCurrent = Math.max(-this.accelerationMax, this.accelerationCurrent-this.accelerationIncrement);
-	},
+		this.accelerationCurrent = -this.accelerationMax/4;
+  },
 	
 	leaveVehicle: function () {
     var player = felony.game.player;
