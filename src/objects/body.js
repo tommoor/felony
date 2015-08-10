@@ -21,6 +21,12 @@ _.extend(Body.prototype, {
 
 		Ticker.addListener(this);
 	},
+  
+  loaded: function() {
+		if (this.render) {
+			felony.game.scene.add(this.render());
+		}
+  },
 
   hide: function() {
     this.body.SetActive(false);
@@ -44,9 +50,12 @@ _.extend(Body.prototype, {
 	},
 	
 	SetPosition: function (vector) {
+    this.x = vector.x*Config.SCALE;
+    this.y = vector.y*Config.SCALE;
+    
 		if (this.display) {
-			this.display.position.x = vector.x*Config.SCALE;
-			this.display.position.y = vector.y*Config.SCALE;
+			this.display.position.x = this.x;
+			this.display.position.y = this.y;
 		}
 		
 		if (this.body) {

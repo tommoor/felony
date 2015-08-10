@@ -15,7 +15,7 @@ _.extend(TrackingCamera.prototype, {
 	target: new b2Vec2(0,0),
 	speed: 10,
 	lookAhead: 30,
-  zoom: 400,
+  zoom: 350,
   camera: null,
 
 	track: function(body) {
@@ -35,7 +35,7 @@ _.extend(TrackingCamera.prototype, {
       var velocity = this.target.getForwardVelocity();
       var vel = velocity.Length();
       target = new b2Vec2(this.target.x+(velocity.x*this.lookAhead), this.target.y+(velocity.y*this.lookAhead));
-      if (vel > 5) autoZoom = vel*vel;
+      autoZoom = vel*vel;
     } else {
       target = this.target;
     }

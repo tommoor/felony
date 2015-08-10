@@ -13,29 +13,36 @@ module.exports = _.extend({
 	
 	offset: new b2Vec2(0,0),
 	tileOffset: new b2Vec2(0,0),
-	visibleWidth: 8,	// must be divisible by 2
-	visibleHeight: 6,   // must be divisible by 2
+	visibleWidth: 16,	// must be divisible by 2
+	visibleHeight: 8,   // must be divisible by 2
 	
 	tiles: [],
 	
 	init: function() {
-    
+    this.loadMap(this.render.bind(this));
+	},
+  
+  loadMap: function(callback) {
     $.getJSON("data/map.json", function(data){
       this.map = data.ground;
-      
-  		this.tile = new Tile();
-  		var h = this.getMaxHeight();
-  		var w = this.getMaxWidth();
-		
-  		for (var y=this.tileOffset.y; y<h; y++) {
-  			this.tiles[y] = [];
-			
-  			for (var x=this.tileOffset.x; x<w; x++) {
-  				this.createTile(x, y);
-  			}
-  		}
+      callback(this.map);
     }.bind(this));
-	},
+  },
+  
+  render: function() {
+    
+		this.tile = new Tile();
+		var h = this.getMaxHeight();
+		var w = this.getMaxWidth();
+	
+		for (var y=this.tileOffset.y; y<h; y++) {
+			this.tiles[y] = [];
+		
+			for (var x=this.tileOffset.x; x<w; x++) {
+				this.createTile(x, y);
+			}
+		}
+  },
 	
 	update: function(camera) {
 		
@@ -50,67 +57,55 @@ module.exports = _.extend({
 		
 		// up
 		if (currentY > this.tileOffset.y) {
-			console.log('up');
+
+			var w = this.getMaxWidth();
+			var m = Math.max(0, this.tileOffset.x);
 			
-			//if (currentY < Map.length-this.visibleHeight) {
-				var w = this.getMaxWidth();
-				var m = Math.max(0, this.tileOffset.x);
-				
-				for (var x=m; x<w; x++) {
-					this.createTile(x, this.tileOffset.y+this.visibleHeight);
-					this.destroyTile(x, this.tileOffset.y);
-				}
-        //}
+			for (var x=m; x<w; x++) {
+				this.createTile(x, this.tileOffset.y+this.visibleHeight);
+				this.destroyTile(x, this.tileOffset.y);
+			}
 			
 			this.tileOffset.y = currentY;
 
 		// down
 		} else if (currentY < this.tileOffset.y) {
-			console.log('down');
+
+			var w = this.getMaxWidth();
+			var m = Math.max(0, this.tileOffset.x);
 			
-			//if (currentY >= 0) {
-				var w = this.getMaxWidth();
-				var m = Math.max(0, this.tileOffset.x);
-				
-				for (var x=m; x<w; x++) {
-					this.createTile(x, currentY);
-					this.destroyTile(x, currentY+this.visibleHeight);
-				}
-        //}
+			for (var x=m; x<w; x++) {
+				this.createTile(x, currentY);
+				this.destroyTile(x, currentY+this.visibleHeight);
+			}
 			
 			this.tileOffset.y = currentY;
 		}
 		
 		// left
 		if (currentX > this.tileOffset.x) {
-			console.log('left');
-			
-			//if (currentX < Map[0].length-this.visibleWidth) {
-				var h = this.getMaxHeight();
-				var m = Math.max(0, this.tileOffset.y);
-				
-				for (var y=m; y<h; y++) {
-					this.createTile(this.tileOffset.x+this.visibleWidth, y);
-					this.destroyTile(this.tileOffset.x, y);
-				}
-        //}
-			
+
+			var h = this.getMaxHeight();
+			var m = Math.max(0, this.tileOffset.y);
+		
+			for (var y=m; y<h; y++) {
+				this.createTile(this.tileOffset.x+this.visibleWidth, y);
+				this.destroyTile(this.tileOffset.x, y);
+			}
+		
 			this.tileOffset.x = currentX;
 
 		// right
 		} else if (currentX < this.tileOffset.x) {
-			console.log('right');
+
+			var h = this.getMaxHeight();
+			var m = Math.max(0, this.tileOffset.y);
 			
-			//if (currentX >= 0) {
-				var h = this.getMaxHeight();
-				var m = Math.max(0, this.tileOffset.y);
-				
-				for (var y=m; y<h; y++) {
-					this.createTile(currentX, y);
-					this.destroyTile(currentX+this.visibleWidth, y);
-				}
-        //}
-			
+			for (var y=m; y<h; y++) {
+				this.createTile(currentX, y);
+				this.destroyTile(currentX+this.visibleWidth, y);
+			}
+		
 			this.tileOffset.x = currentX;
 		}
 	},

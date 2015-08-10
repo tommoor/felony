@@ -22,18 +22,20 @@ module.exports = Tile.extend({
 		var bodyDef = new b2BodyDef;
 		this.body = felony.game.world.CreateBody(bodyDef);
 		this.body.CreateFixture(fixDef);
+    
+    var loader = new THREE.ObjectLoader();
+    loader.load('data/objects/building1.json', function(object){
+      this.display = object;
+      this.display.castShadow = object.userData.castShadow;
+      this.display.receiveShadow = object.userData.receiveShadow;
+  		this.display.position.x = this.x;
+  		this.display.position.y = this.y;
+  		this.display.position.z = object.geometry.depth/2;
+      this.loaded();
+    }.bind(this));
 	},
 	
 	render: function() {
-		// temporary graphic
-    var height = 100 + (Math.random()*200);
-		var geometry = new THREE.BoxGeometry(100, 100, height);
-
-    var material = new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff, vertexColors: THREE.VertexColors } );
-		this.display = new THREE.Mesh(geometry, material);
-		this.display.position.z = height/2;
-    this.display.castShadow = true;
-		this.display.receiveShadow = true;
 		return this.display;
 	}
 });

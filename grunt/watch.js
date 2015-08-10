@@ -5,6 +5,12 @@ module.exports = {
       livereload: true
     }
   },
+  data: {
+    files: ['data/**/*.json'],
+    options: {
+      livereload: true
+    }
+  },
   styles: {
     files: ['static/less/*.less'],
     tasks: ['less'],
