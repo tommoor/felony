@@ -1,5 +1,4 @@
 var EventEmitter = require('events').EventEmitter;
-var Map = require('../../data/map');
 var Config = require('../config');
 var Tile = require('../tiles/tile');
 var TileSolid = require('../tiles/tile-solid');
@@ -7,6 +6,7 @@ var TileRoad = require('../tiles/tile-road');
 var TileBanner = require('../tiles/tile-banner');
 var Box2D = require('box-2d-web');
 var b2Vec2 = Box2D.Common.Math.b2Vec2;
+var $ = require('jquery-browserify');
 var _ = require('underscore');
 
 module.exports = _.extend({
@@ -19,17 +19,22 @@ module.exports = _.extend({
 	tiles: [],
 	
 	init: function() {
-		this.tile = new Tile();
-		var h = this.getMaxHeight();
-		var w = this.getMaxWidth();
+    
+    $.getJSON("data/map.json", function(data){
+      this.map = data.ground;
+      
+  		this.tile = new Tile();
+  		var h = this.getMaxHeight();
+  		var w = this.getMaxWidth();
 		
-		for (var y=this.tileOffset.y; y<h; y++) {
-			this.tiles[y] = [];
+  		for (var y=this.tileOffset.y; y<h; y++) {
+  			this.tiles[y] = [];
 			
-			for (var x=this.tileOffset.x; x<w; x++) {
-				this.createTile(x, y);
-			}
-		}
+  			for (var x=this.tileOffset.x; x<w; x++) {
+  				this.createTile(x, y);
+  			}
+  		}
+    }.bind(this));
 	},
 	
 	update: function(camera) {
@@ -111,9 +116,9 @@ module.exports = _.extend({
 	},
 	
 	createTile: function(x, y) {
-		var why = Map.length-y-1;
-    if (!Map[why]) return;
-		var opts = Map[why][x];
+		var why = this.map.length-y-1;
+    if (!this.map[why]) return;
+		var opts = this.map[why][x];
 		if (!opts) return;
 		
 		// temp
@@ -139,16 +144,16 @@ module.exports = _.extend({
 	getInBounds: function(x, y) {
 		
 		if (x < 0 || y < 0) return false;
-		if (x > Map[0].length || y > Map.length) return false;
+		if (x > this.map[0].length || y > this.map.length) return false;
 		return true;
 	},
 	
 	getMaxWidth: function() {
-		return Math.min(Map[0].length, this.tileOffset.x+this.visibleWidth);
+		return Math.min(this.map[0].length, this.tileOffset.x+this.visibleWidth);
 	},
 	
 	getMaxHeight: function() {
-		return Math.min(Map.length, this.tileOffset.y+this.visibleHeight);
+		return Math.min(this.map.length, this.tileOffset.y+this.visibleHeight);
 	}
 	
 }, EventEmitter.prototype);
