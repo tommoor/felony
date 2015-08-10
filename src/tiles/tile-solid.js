@@ -27,13 +27,13 @@ module.exports = Tile.extend({
 	render: function() {
 		// temporary graphic
     var height = 100 + (Math.random()*200);
-		var geometry = new THREE.BoxGeometry(150, 150, height);
+		var geometry = new THREE.BoxGeometry(100, 100, height);
 
     var material = new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff, vertexColors: THREE.VertexColors } );
 		this.display = new THREE.Mesh(geometry, material);
 		this.display.position.z = height/2;
     this.display.castShadow = true;
-		//this.display.receiveShadow = true;
+		this.display.receiveShadow = true;
 		return this.display;
 	}
 });

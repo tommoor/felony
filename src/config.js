@@ -1,4 +1,4 @@
 module.exports = {
 	FRAMERATE: 20,
-	SCALE: 30.0
+	SCALE: 25.0
 }

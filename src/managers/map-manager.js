@@ -1,5 +1,5 @@
 var EventEmitter = require('events').EventEmitter;
-var Map = require('../map');
+var Map = require('../../data/map');
 var Config = require('../config');
 var Tile = require('../tiles/tile');
 var TileSolid = require('../tiles/tile-solid');

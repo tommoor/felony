@@ -3,14 +3,14 @@ var THREE = require('three');
 
 module.exports = Body.extend({
 	
-	WIDTH: 5,
-	HEIGHT: 5,
+	WIDTH: 4,
+	HEIGHT: 4,
 	COLOUR: 0xa2f985,
 	
 	render: function() {
 		
 		// temporary graphic
-		var geometry = new THREE.PlaneGeometry(150, 150);
+		var geometry = new THREE.PlaneGeometry(100, 100);
 		var material = new THREE.MeshLambertMaterial({ color: this.COLOUR });
 		this.display = new THREE.Mesh(geometry, material);
 		this.display.receiveShadow = true;
